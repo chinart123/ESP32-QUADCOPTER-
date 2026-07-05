@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="Sender-Receiver-Flow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ============ SENDER ============ -->
+        <mxCell id="sender" value="SENDER — ESP32-S3 SuperMini (dual-core)" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="580" height="640" as="geometry" />
+        </mxCell>
+
+        <!-- Core 1 lane -->
+        <mxCell id="core1" value="Core 1 — Flight-critical · 4 ms (250 Hz) loop" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f0f4fb;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;verticalAlign=top;" vertex="1" parent="sender">
+          <mxGeometry x="20" y="50" width="540" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="mpu" value="MPU6050&#xa;(IMU)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="core1">
+          <mxGeometry x="20" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="vl53" value="VL53L1X&#xa;(ToF height)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="core1">
+          <mxGeometry x="195" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pmw" value="PMW3901&#xa;(optical flow)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="core1">
+          <mxGeometry x="370" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl" value="Kalman filter → Cascaded PID (angle→rate) → Motor Mix" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="core1">
+          <mxGeometry x="20" y="160" width="500" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="motors" value="4× Motor (LEDC PWM)&#xa;RR · FR · RL · FL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="core1">
+          <mxGeometry x="20" y="280" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="packet" value="Fill TelemetryPacket&#xa;roll/pitch/yaw · alt · pos&#xa;v_bat · armed …" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="core1">
+          <mxGeometry x="300" y="270" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Core 0 lane -->
+        <mxCell id="core0" value="Core 0 — Network (isolated from flight loop)" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f6f0fa;strokeColor=#9673a6;fontStyle=1;fontSize=12;verticalAlign=top;" vertex="1" parent="sender">
+          <mxGeometry x="20" y="450" width="540" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="espnow_send" value="TelemetryTask&#xa;esp_now_send() → receiverAddress" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="core0">
+          <mxGeometry x="20" y="50" width="500" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ============ RECEIVER ============ -->
+        <mxCell id="recv" value="RECEIVER — ESP32 (ground station)" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="770" y="60" width="400" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="ondata" value="OnDataRecv()&#xa;parse TelemetryPacket" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="recv">
+          <mxGeometry x="30" y="60" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="serial" value="Serial.print @ 921600 baud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="recv">
+          <mxGeometry x="30" y="150" width="340" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ============ PC ============ -->
+        <mxCell id="pc" value="PC — Processing" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="770" y="400" width="400" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="sim" value="drone_sim_clean.pde&#xa;read Serial → 3D drone view" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="pc">
+          <mxGeometry x="30" y="60" width="340" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ============ EDGES ============ -->
+        <!-- sensors -> control -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core1" source="mpu" target="ctrl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core1" source="vl53" target="ctrl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core1" source="pmw" target="ctrl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- control -> motors -->
+        <mxCell id="e4" value="motor cmds" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core1" source="ctrl" target="motors">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- control -> packet -->
+        <mxCell id="e5" value="flight state" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core1" source="ctrl" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- packet -> core0 (cross-lane hand-off) -->
+        <mxCell id="e6" value="inter-core hand-off" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.08;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="packet" target="espnow_send">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="470" />
+              <mxPoint x="120" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- ESP-NOW wireless hop -->
+        <mxCell id="e7" value="ESP-NOW · 2.4 GHz" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;flowAnimation=1;strokeColor=#9673a6;strokeWidth=2;fontSize=12;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="espnow_send" target="recv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- receiver internal -->
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="recv" source="ondata" target="serial">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- receiver -> PC over USB -->
+        <mxCell id="e9" value="USB Serial" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;flowAnimation=1;strokeColor=#666666;strokeWidth=2;fontSize=12;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="serial" target="sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ LEGEND ============ -->
+        <mxCell id="legend" value="Legend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="710" width="230" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" value="" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="legend">
+          <mxGeometry x="10" y="30" width="30" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1t" value="Sensors" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="legend">
+          <mxGeometry x="50" y="28" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" value="" style="rounded=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="legend">
+          <mxGeometry x="10" y="54" width="30" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2t" value="Flight control (fusion + PID)" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="legend">
+          <mxGeometry x="50" y="52" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" value="" style="rounded=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="legend">
+          <mxGeometry x="10" y="78" width="30" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3t" value="Motors (actuators)" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="legend">
+          <mxGeometry x="50" y="76" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" value="" style="rounded=0;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="legend">
+          <mxGeometry x="10" y="102" width="30" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4t" value="Telemetry / ESP-NOW" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="legend">
+          <mxGeometry x="50" y="100" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5" value="" style="rounded=0;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="legend">
+          <mxGeometry x="10" y="126" width="30" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5t" value="Ground station &amp; PC" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="legend">
+          <mxGeometry x="50" y="124" width="170" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
