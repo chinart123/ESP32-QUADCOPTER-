@@ -26,15 +26,15 @@
 
         <!-- TX antenna -->
         <mxCell id="antTx" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="610" y="150" width="50" height="66" as="geometry" />
+          <mxGeometry x="612" y="175" width="46" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="txLbl" value="TX 8.5 dBm" style="text;html=1;align=center;fontSize=10;fontColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="600" y="222" width="70" height="16" as="geometry" /></mxCell>
+        <mxCell id="txLbl" value="TX · 8.5 dBm" style="text;html=1;align=center;fontSize=10;fontColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="600" y="240" width="72" height="16" as="geometry" /></mxCell>
 
         <!-- RX antenna -->
-        <mxCell id="antRx" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;direction=north;" vertex="1" parent="1">
-          <mxGeometry x="740" y="150" width="50" height="66" as="geometry" />
+        <mxCell id="antRx" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="722" y="175" width="46" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="rxLbl" value="RX" style="text;html=1;align=center;fontSize=10;fontColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="745" y="222" width="40" height="16" as="geometry" /></mxCell>
+        <mxCell id="rxLbl" value="RX" style="text;html=1;align=center;fontSize=10;fontColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="722" y="240" width="46" height="16" as="geometry" /></mxCell>
 
         <!-- 3 OnDataRecv -->
         <mxCell id="recv" value="&lt;b&gt;③ OnDataRecv() — ESP32&lt;/b&gt;&#xa;&#xa;if len == sizeof(packet):&#xa;memcpy → tele&#xa;then printProcessing()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
@@ -59,9 +59,10 @@
 
         <!-- edges -->
         <mxCell id="f1" value="10 Hz" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="fstate" target="pack"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="f2" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0.5;entryY=0.5;" edge="1" parent="1" source="pack" target="antTx"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="fLink" value="ESP-NOW · 2.4 GHz · connection-less" style="html=1;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.4;entryX=0;entryY=0.4;" edge="1" parent="1" source="antTx" target="antRx"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="f3" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=0.5;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="antRx" target="recv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="wlbl" value="ESP-NOW · 2.4 GHz · connection-less · 10 Hz" style="text;html=1;align=center;fontSize=11;fontStyle=1;fontColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="550" y="146" width="280" height="18" as="geometry" /></mxCell>
+        <mxCell id="f2" value="esp_now_send" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;fontSize=10;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pack" target="antTx"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fLink" style="html=1;endArrow=classic;startArrow=none;strokeColor=#9673a6;strokeWidth=2;dashed=1;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" edge="1" parent="1" source="antTx" target="antRx"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f3" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="antRx" target="recv"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="f4" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="recv" target="serial"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="f5" value="CSV lines" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="serial" target="pcCard"><mxGeometry relative="1" as="geometry" /></mxCell>
 
