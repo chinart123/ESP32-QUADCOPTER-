@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="MPU6050-Cascade-Control">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="ttl" value="MPU6050 — Attitude Control · Cascade P–PID (angle → rate)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="120" y="20" width="1200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== nested dashed loop boxes (drawn behind) ===== -->
+        <mxCell id="outerBox" value="OUTER LOOP — P (Angle):  drives angle to target, sets the rate set-point" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B7F;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#2E8B7F;" vertex="1" parent="1">
+          <mxGeometry x="165" y="95" width="1170" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="innerBox" value="INNER LOOP — PID (Rate):  tracks ω*, output is the motor command" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#E8862E;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#E8862E;" vertex="1" parent="1">
+          <mxGeometry x="558" y="122" width="770" height="368" as="geometry" />
+        </mxCell>
+
+        <!-- ===== setpoint ===== -->
+        <mxCell id="sp" value="\(\theta_{target}\)&#xa;(RC ±25°)" style="text;html=1;align=right;verticalAlign=middle;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="130" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Sigma 1 (outer) ===== -->
+        <mxCell id="sum1" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="183" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="sum1p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1">
+          <mxGeometry x="176" y="178" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="sum1m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="214" y="226" width="16" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- ===== P - Angle block ===== -->
+        <mxCell id="pAngle" value="&lt;b&gt;P — Angle&lt;/b&gt;&#xa;\(\omega^{*} = K_p\,e_\theta\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="285" y="172" width="195" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="pAngleK" value="\[K_p = 7.3\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="285" y="240" width="195" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Sigma 2 (inner) ===== -->
+        <mxCell id="sum2" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="183" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="sum2p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1">
+          <mxGeometry x="570" y="178" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="sum2m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="608" y="226" width="16" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- ===== PID - Rate block ===== -->
+        <mxCell id="pidRate" value="&lt;b&gt;PID — Rate&lt;/b&gt;&#xa;\(u = K_p e + K_i\!\int e\,dt + K_d\,\dot e\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="167" width="255" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pidRateK" value="\[K_p{=}0.6 \quad K_i{=}0.04 \quad K_d{=}0.012\quad(I\ \text{clamp}\ \pm200)\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="245" width="336" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Plant ===== -->
+        <mxCell id="plant" value="&lt;b&gt;Motor Mix + Airframe&lt;/b&gt;&#xa;X-quad · \(b \pm u_\phi \pm u_\theta \pm u_\psi\)&#xa;→ ledcWrite ×4" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6f4;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="168" width="235" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- ===== feedback: MPU6050 + Kalman ===== -->
+        <mxCell id="imu" value="&lt;b&gt;MPU6050 (IMU)&lt;/b&gt;&#xa;accel + gyro · readBurst @ 400 kHz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="690" y="380" width="245" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="kalman" value="&lt;b&gt;Kalman filter&lt;/b&gt;&#xa;\(\phi,\theta = \mathrm{Kalman}(\text{atan2},\,\omega)\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="285" y="380" width="215" height="78" as="geometry" />
+        </mxCell>
+
+        <mxCell id="yawNote" value="Yaw: rate-only PID (Kp 7.5, no outer angle loop) · dt = 4 ms @ 250 Hz" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="970" y="420" width="345" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== forward-path edges ===== -->
+        <mxCell id="e_sp" style="html=1;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sp" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e1" value="\(e_\theta\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum1" target="pAngle"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="\(\omega^{*}\) (target rate)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pAngle" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="\(e_\omega\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum2" target="pidRate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="\(u\) (motor cmd)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pidRate" target="plant"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ===== feedback-path edges ===== -->
+        <mxCell id="fb_plant" value="actual rotation (physical)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="plant" target="imu"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_rate" value="\(\omega_{gyro}\) (rate feedback)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.72;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="imu" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_kal" value="accel + gyro" style="html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="imu" target="kalman"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_angle" value="\(\theta\) (fRoll / fPitch)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="kalman" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="MPU6050-Kalman-Filter">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="ttl" value="MPU6050 — Kalman Filter (angle + gyro-bias estimation, per axis)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="120" y="18" width="1360" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="State x = [ θ, b ] — gyro predicts · accel corrects · the filter also learns the gyro drift (bias b)" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="120" y="50" width="1360" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ===== inputs ===== -->
+        <mxCell id="gyroIn" value="Gyroscope&#xa;\(\omega\) = rate (°/s)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="185" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="accelIn" value="Accelerometer · \(z = \mathrm{atan2}\) (measured angle)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="955" y="90" width="290" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- ===== PREDICT ===== -->
+        <mxCell id="predict" value="① PREDICT — Time Update" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#2E8B7F;fontStyle=1;fontSize=14;fontColor=#2E8B7F;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="150" width="470" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="predictBody" value="\[rate = \omega - b\]\[\theta^{-} = \theta + rate\cdot dt\]\[P^{-} = F\,P\,F^{\top} + Q,\quad F=\begin{bmatrix}1 &amp; -dt\\ 0 &amp; 1\end{bmatrix}\]" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;" vertex="1" parent="predict">
+          <mxGeometry x="10" y="36" width="450" height="155" as="geometry" />
+        </mxCell>
+
+        <!-- ===== UPDATE ===== -->
+        <mxCell id="update" value="② UPDATE — Measurement Update" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#E8862E;fontStyle=1;fontSize=14;fontColor=#E8862E;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="850" y="150" width="500" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="updateBody" value="\[y = z - \theta^{-}\qquad\text{(innovation)}\]\[S = P^{-}_{00} + R\]\[K = \tfrac{1}{S}\begin{bmatrix}P^{-}_{00}\\[2pt] P^{-}_{10}\end{bmatrix}\qquad H=[\,1\ \ 0\,]\]\[\theta = \theta^{-} + K_0\,y,\quad b = b^{-} + K_1\,y\]\[P = (I - K\,H)\,P^{-}\]" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;" vertex="1" parent="update">
+          <mxGeometry x="10" y="36" width="480" height="275" as="geometry" />
+        </mxCell>
+
+        <!-- ===== output ===== -->
+        <mxCell id="out" value="State estimate&#xa;\(\hat\theta\) → fRoll / fPitch&#xa;\(\hat b\) = gyro bias&#xa;(drift corrected)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="255" width="185" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== params ===== -->
+        <mxCell id="params" value="\[Q_\theta = 0.003 \quad Q_b = 0.003 \quad R = 0.15 \quad dt = 4\,\mathrm{ms}\]&#xa;runs on 2 axes (roll &amp; pitch) @ 250 Hz" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="300" y="520" width="1050" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== edges ===== -->
+        <mxCell id="k_gyro" value="\(\omega\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gyroIn" target="predict"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k_accel" value="\(z\) (measurement)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="accelIn" target="update"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k_prior" value="a priori \(\theta^{-}, P^{-}\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="predict" target="update"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k_out" value="\(\hat\theta\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="update" target="out"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k_recur" value="a posteriori \(\theta, b, P\)  →  next cycle  (\(z^{-1}\), dt = 4 ms)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;dashed=1;rounded=0;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="update" target="predict">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1025" y="505" /><mxPoint x="535" y="505" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

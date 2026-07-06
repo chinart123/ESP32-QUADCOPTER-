@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="ESP32-Dual-Core-RTOS">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="ttl" value="ESP32-S3 — FreeRTOS Dual-Core Task Model (dashed boxes = tasks · clocks = scheduling rate)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1240" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== BOOT / setup() ===================== -->
+        <mxCell id="cardBoot" value="BOOT — setup() runs on Core 1" style="swimlane;startSize=24;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=3;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="1240" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="bootIC" value="ESP32-S3" style="shadow=0;dashed=0;align=center;html=1;strokeWidth=1;shape=mxgraph.electrical.logic_gates.qfp_ic;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=10;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="cardBoot">
+          <mxGeometry x="20" y="34" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bootTxt" value="Serial 921600 &#183; setupEspNow() &#183; setupPMW() &#183; I2C_IMU.begin(5,6,400 kHz) &#183; myIMU.begin() &#183; setupToF()&#xa;Kalman tune (Rmeasure 0.15 &#183; Qangle 0.003 &#183; Qbias 0.003) &#183; smartCalibrate() — 2000 stable samples&#xa;attach 6 RC ISRs (isr0..isr5 &#183; INPUT_PULLDOWN &#183; CHANGE) &#183; ledcAttach \(\times 4\) motors (8 kHz &#183; 10-bit)&#xa;xTaskCreatePinnedToCore &#8594; NavTask (Core 1 &#183; stack 4096 &#183; prio 2) + TeleTask (Core 0 &#183; stack 2048 &#183; prio 1)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;spacingLeft=6;" vertex="1" parent="cardBoot">
+          <mxGeometry x="100" y="28" width="1120" height="82" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== RC ISRs ===================== -->
+        <mxCell id="cardISR" value="RC RECEIVER — GPIO ISRs" style="swimlane;startSize=24;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;dashed=1;dashPattern=6 6;fontSize=11;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="215" width="250" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="isrTxt" value="6 channels — pulse width capture&#xa;GPIO 16 / 15 / 14 / 39 / 40 / 41&#xa;isr0..isr5  (IRAM_ATTR &#183; CHANGE)&#xa;&#8594; rcValue[6]  \((1000\text{–}2000\,\mu s)\)&#xa;roll · pitch · thr · yaw · arm · mode" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="cardISR">
+          <mxGeometry x="12" y="34" width="228" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== CORE 1 ===================== -->
+        <mxCell id="core1" value="CORE 1 — Flight-critical (real-time · no Wi-Fi)" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f0f4fb;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="320" y="215" width="470" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="cardLoop" value="loop() — Arduino loopTask (Core 1 · prio 1)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=6 6;fontSize=11;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="core1">
+          <mxGeometry x="20" y="45" width="430" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="loopTxt" value="\(f=250\,\mathrm{Hz}\), busy-wait \(T=4000\,\mu s\)&#xa;myIMU.update() &#8594; Kalman &#8594; \(\phi,\theta,\psi\) (fRoll/fPitch/fYaw)&#xa;RC map: roll/pitch \(\pm 25^\circ\) &#183; thr \(40\text{–}850\) &#183; yaw \(\pm 150^\circ/s\)&#xa;arm/disarm + failsafe: tilt \(&gt; 40^\circ \Rightarrow\) disarm&#xa;Cascaded PID: angle \(\rightarrow\) rate (roll/pitch/yaw)&#xa;Motor Mix (X-quad) &#8594; ledcWrite \(\times 4\) (8 kHz · 10-bit)" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="cardLoop">
+          <mxGeometry x="12" y="28" width="360" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="loopClk" value="250 Hz" style="html=1;align=center;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#6c8ebf;shadow=0;dashed=0;fontSize=9;shape=mxgraph.ios7.icons.clock;" vertex="1" parent="cardLoop">
+          <mxGeometry x="384" y="30" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cardNav" value="NavigationCore1Task (prio 2 · stack 4096)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=6 6;fontSize=11;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="core1">
+          <mxGeometry x="20" y="285" width="430" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="navTxt" value="\(T = 4\,\mathrm{ms}\) — vTaskDelayUntil(4 / portTICK)&#xa;updateToF():  \(h = d\cos\phi\cos\theta\)  + Alt-Hold PID&#xa;updatePMW():  optical flow + Pos-Hold PID&#xa;writes shared_altitudeCorrection · shared_pwm_opt" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="cardNav">
+          <mxGeometry x="12" y="28" width="360" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="navClk" value="4 ms" style="html=1;align=center;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#6c8ebf;shadow=0;dashed=0;fontSize=9;shape=mxgraph.ios7.icons.clock;" vertex="1" parent="cardNav">
+          <mxGeometry x="384" y="30" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== CORE 0 ===================== -->
+        <mxCell id="core0" value="CORE 0 — Network (Wi-Fi isolated)" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f6f0fa;strokeColor=#9673a6;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="830" y="215" width="450" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="cardTele" value="TelemetryTask (prio 1 · stack 2048)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#9673a6;dashed=1;dashPattern=6 6;fontSize=11;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="core0">
+          <mxGeometry x="20" y="45" width="410" height="195" as="geometry" />
+        </mxCell>
+        <mxCell id="teleTxt" value="\(f = 10\,\mathrm{Hz} \Rightarrow T = 100\,\mathrm{ms}\)  (vTaskDelayUntil)&#xa;copy live flight state &#8594; TelemetryPacket tele&#xa;(roll/pitch/yaw · alt · pos · v_bat · armed …)&#xa;esp_now_send(receiverAddress, &amp;tele, sizeof(tele))&#xa;rc4_min &#8594; 2000  (RC glitch watchdog reset)" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="cardTele">
+          <mxGeometry x="12" y="28" width="340" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="teleClk" value="10 Hz" style="html=1;align=center;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#9673a6;shadow=0;dashed=0;fontSize=9;shape=mxgraph.ios7.icons.clock;" vertex="1" parent="cardTele">
+          <mxGeometry x="356" y="30" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cardRadio" value="ESP-NOW radio" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#9673a6;dashed=1;dashPattern=6 6;fontSize=11;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="core0">
+          <mxGeometry x="20" y="260" width="410" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="radioAnt" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="cardRadio">
+          <mxGeometry x="30" y="30" width="60" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="radioTxt" value="ESP-NOW · 2.4 GHz · channel 0&#xa;unencrypted · &#8594; ground station&#xa;WiFi STA · TX power 8.5 dBm&#xa;(Core 0 isolated from Wi-Fi jitter)" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="cardRadio">
+          <mxGeometry x="110" y="35" width="290" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== SHARED STATE ===================== -->
+        <mxCell id="cardShared" value="SHARED STATE — volatile inter-core handshake" style="swimlane;startSize=24;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#666666;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=3;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="695" width="960" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="sharedTxt" value="Handshake (Core 1 &#8646; Core 0):  shared_altitudeCorrection · shared_smoothCorrection · shared_pwm_opt_x / _y · shared_pos_hold_active&#xa;Flight state (Core 1 &#8594; tele):  fRoll / fPitch / fYaw · filteredHeight · verticalSpeed · pos_x / pos_y · isArmed · filtered_voltage&#xa;Wire format:  TelemetryPacket tele  — byte-for-byte identical on sender &amp; receiver" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;spacingLeft=8;" vertex="1" parent="cardShared">
+          <mxGeometry x="15" y="30" width="930" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== EDGES ===================== -->
+        <mxCell id="eb1" value="spawns loopTask + NavTask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#d6b656;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardBoot" target="core1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="eb2" value="spawns TeleTask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#d6b656;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardBoot" target="core0"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="ei" value="rcValue[6]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#82b366;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardISR" target="cardLoop"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="en" value="writes shared_alt / shared_pwm" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#6c8ebf;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardNav" target="cardShared"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="esl" value="Core 1 reads shared &#8594; throttle / target" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#666666;exitX=0.05;exitY=0;exitDx=0;exitDy=0;entryX=0.15;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardShared" target="core1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="est" value="reads flight state" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#666666;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.55;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardShared" target="cardTele">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1320" y="740" /><mxPoint x="1320" y="370" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="etr" value="&amp;tele · sizeof(tele)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="core0" source="cardTele" target="cardRadio"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
