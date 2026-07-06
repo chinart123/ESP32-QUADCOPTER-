@@ -6,63 +6,65 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="ttl" value="ESP32-S3 — Dual-Core FreeRTOS Model  (flight isolated from Wi-Fi)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
-          <mxGeometry x="80" y="18" width="1080" height="30" as="geometry" />
+        <mxCell id="ttl" value="ESP32-S3 — Dual-Core FreeRTOS Model  (flight loop isolated from Wi-Fi)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="300" y="18" width="1050" height="30" as="geometry" />
         </mxCell>
 
-        <!-- ESP32-S3 badge -->
-        <mxCell id="chip" value="ESP32-S3" style="shape=mxgraph.electrical.logic_gates.qfp_ic;html=1;fillColor=#f5f5f5;strokeColor=#333333;fontSize=10;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="575" y="62" width="70" height="70" as="geometry" />
+        <!-- RC input -->
+        <mxCell id="rcIsr" value="&lt;b&gt;RC input — 6× ISR&lt;/b&gt;&#xa;IRAM · on CHANGE&#xa;pins 16,15,14,39,40,41&#xa;→ rcValue[0..5] (µs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="230" height="110" as="geometry" />
         </mxCell>
 
-        <!-- RC ISRs -->
-        <mxCell id="rcIsr" value="&lt;b&gt;RC input — 6× ISR&lt;/b&gt;&#xa;IRAM, on CHANGE&#xa;pins 16,15,14,39,40,41&#xa;→ rcValue[0..5] (µs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="60" y="180" width="200" height="96" as="geometry" />
-        </mxCell>
-
-        <!-- CORE 1 card -->
+        <!-- CORE 1 box -->
         <mxCell id="core1" value="CORE 1 — FLIGHT-CRITICAL  ·  250 Hz / 4 ms  ·  no Wi-Fi allowed" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B7F;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=13;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1">
-          <mxGeometry x="300" y="150" width="560" height="330" as="geometry" />
+          <mxGeometry x="340" y="90" width="840" height="400" as="geometry" />
         </mxCell>
         <mxCell id="loopTask" value="&lt;b&gt;loop()  — Arduino loopTask&lt;/b&gt;&#xa;IMU update · RC decode · Kalman&#xa;cascade PID (roll·pitch·yaw)&#xa;motor mix → ledcWrite ×4&#xa;busy-wait → 4000 µs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8efe9;strokeColor=#2E8B7F;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="325" y="205" width="255" height="135" as="geometry" />
+          <mxGeometry x="375" y="150" width="360" height="200" as="geometry" />
         </mxCell>
         <mxCell id="navTask" value="&lt;b&gt;NavigationCore1Task&lt;/b&gt; (prio 2)&#xa;updateToF() — alt-hold PID&#xa;updatePMW() — pos-hold PID&#xa;vTaskDelayUntil 4 ms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8efe9;strokeColor=#2E8B7F;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="595" y="205" width="245" height="135" as="geometry" />
+          <mxGeometry x="785" y="150" width="360" height="200" as="geometry" />
         </mxCell>
         <mxCell id="clk1" value="" style="shape=mxgraph.ios7.icons.clock;html=1;strokeColor=#2E8B7F;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="325" y="352" width="26" height="26" as="geometry" />
+          <mxGeometry x="378" y="410" width="24" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="clk1t" value="both tasks pinned to Core 1 @ 250 Hz — deterministic 4 ms tick" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#2E8B7F;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="358" y="352" width="480" height="26" as="geometry" />
+        <mxCell id="clk1t" value="both tasks pinned to Core 1 @ 250 Hz — deterministic 4 ms tick" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#2E8B7F;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="412" y="410" width="500" height="24" as="geometry" />
         </mxCell>
 
-        <!-- CORE 0 card -->
-        <mxCell id="core0" value="CORE 0 — NETWORK" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=13;fontStyle=1;fontColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="900" y="150" width="300" height="330" as="geometry" />
+        <!-- CORE 0 box -->
+        <mxCell id="core0" value="CORE 0 — NETWORK  ·  Wi-Fi only" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=13;fontStyle=1;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="90" width="400" height="400" as="geometry" />
         </mxCell>
-        <mxCell id="teleTask" value="&lt;b&gt;TelemetryTask&lt;/b&gt; (prio 1)&#xa;fill TelemetryPacket&#xa;esp_now_send()&#xa;vTaskDelayUntil 100 ms&#xa;→ 10 Hz · TX 8.5 dBm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="925" y="210" width="250" height="150" as="geometry" />
+        <mxCell id="teleTask" value="&lt;b&gt;TelemetryTask&lt;/b&gt; (prio 1)&#xa;fill TelemetryPacket&#xa;esp_now_send()&#xa;vTaskDelayUntil 100 ms&#xa;→ 10 Hz" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1275" y="150" width="300" height="200" as="geometry" />
         </mxCell>
         <mxCell id="ant" value="" style="shape=mxgraph.electrical.radio.aerial_-_antenna_1;html=1;strokeColor=#6c8ebf;fillColor=none;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="1035" y="378" width="30" height="40" as="geometry" />
+          <mxGeometry x="1585" y="200" width="34" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="antt" value="ESP-NOW → ground station" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#6c8ebf;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="980" y="422" width="150" height="18" as="geometry" />
+        <mxCell id="antt" value="ESP-NOW&#xa;TX 8.5 dBm" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#6c8ebf;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1548" y="252" width="108" height="28" as="geometry" />
         </mxCell>
 
         <!-- SHARED STATE -->
-        <mxCell id="shared" value="&lt;b&gt;SHARED STATE (volatile)&lt;/b&gt;  —  shared_altitudeCorrection · shared_smoothCorrection · shared_pwm_opt_x/y · shared_pos_hold_active   (NavTask → loop, both Core 1)   |   flight state (fRoll, fPitch, alt…) read by TelemetryTask on Core 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="60" y="520" width="1140" height="70" as="geometry" />
+        <mxCell id="shared" value="&lt;b&gt;SHARED STATE (volatile)&lt;/b&gt;   —   shared_altitudeCorrection · shared_smoothCorrection · shared_pwm_opt_x/y · shared_pos_hold_active   ·   flight state: fRoll · fPitch · alt · pos …" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="340" y="560" width="1300" height="70" as="geometry" />
         </mxCell>
 
         <!-- edges -->
-        <mxCell id="e_rc" value="rcValue[ ]" style="html=1;endArrow=classic;strokeColor=#d6b656;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.4;" edge="1" parent="1" source="rcIsr" target="loopTask"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_chip1" style="html=1;endArrow=none;strokeColor=#cccccc;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="chip" target="core1"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_chip0" style="html=1;endArrow=none;strokeColor=#cccccc;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="chip" target="core0"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_nav_shared" value="corrections" style="html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.75;entryY=0;" edge="1" parent="1" source="navTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_shared_loop" value="alt/pos correction" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.35;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="shared" target="loopTask"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_tele_shared" value="reads flight state" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#6c8ebf;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;entryX=0.98;entryY=0;" edge="1" parent="1" source="teleTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_rc" value="rcValue[ ]" style="html=1;endArrow=classic;strokeColor=#d6b656;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.45;" edge="1" parent="1" source="rcIsr" target="loopTask"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- NavTask writes corrections down to shared (vertical, under NavTask) -->
+        <mxCell id="e_nav_write" value="writes shared_*Correction" style="html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.49;entryY=0;" edge="1" parent="1" source="navTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- shared feeds corrections up to loop (vertical, under loop) -->
+        <mxCell id="e_loop_read" value="applies to throttle / setpoint" style="html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.17;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="shared" target="loopTask"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- shared feeds flight state up to telemetry (vertical) -->
+        <mxCell id="e_tele_read" value="reads flight state" style="html=1;endArrow=classic;strokeColor=#6c8ebf;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.85;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="shared" target="teleTask"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- telemetry -> antenna (ESP-NOW out) -->
+        <mxCell id="e_tx" value="esp_now_send" style="html=1;endArrow=classic;strokeColor=#6c8ebf;strokeWidth=2;fontSize=10;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.4;entryX=0;entryY=0.5;" edge="1" parent="1" source="teleTask" target="ant"><mxGeometry relative="1" as="geometry" /></mxCell>
 
       </root>
     </mxGraphModel>
