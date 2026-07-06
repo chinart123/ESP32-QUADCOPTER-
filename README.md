@@ -71,6 +71,10 @@ The ESP32-S3's two cores are split so flight never waits on the radio:
 
 ## Flight Control
 
+The full attitude pipeline — sensor read → Kalman estimate → cascaded PID → X-quad motor mix:
+
+![MPU6050 attitude pipeline](assets/mpu6050/mpu6050-algorithm.png)
+
 **Attitude estimation — Kalman filter** (per axis: angle + gyro-bias):
 
 ![MPU6050 Kalman filter](assets/mpu6050/mpu6050-kalman-filter.png)
@@ -159,6 +163,18 @@ typedef struct {
   uint8_t armed;                 // arm state
 } TelemetryPacket;
 ```
+
+### ESP-NOW link
+Connection-less 2.4 GHz unicast — the sender packs the struct and `esp_now_send`s it 10×/s;
+the receiver's `OnDataRecv` callback validates the length and `memcpy`s it back:
+
+![ESP-NOW telemetry link](assets/telemetry-esp-now/telemetry-esp-now.png)
+
+### Ground-station visualizer (Processing)
+The receiver forwards each packet over USB Serial as a `"SIM,…"` CSV line; the Processing
+sketch parses it into a live 3D digital twin — attitude, altitude, position path, and graphs:
+
+![Processing digital twin](assets/telemetry-processing-app/telemetry-processing-app.png)
 
 ---
 
