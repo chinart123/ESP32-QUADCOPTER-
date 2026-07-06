@@ -65,7 +65,6 @@
         <mxCell id="frontArrow" value="front" style="text;html=1;align=center;fontSize=11;fontStyle=2;fontColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="890" y="446" width="60" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="pipeIn" style="html=1;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;exitX=1;exitY=0.5;entryX=0.5;entryY=1;dashed=1;" edge="1" parent="1" source="s5" target="body"><mxGeometry relative="1" as="geometry" /></mxCell>
 
       </root>
     </mxGraphModel>
