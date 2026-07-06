@@ -90,6 +90,23 @@ own PID corrections on top of attitude control.
 
 ---
 
+## Altitude Hold — VL53L1X (Time-of-Flight)
+
+Tilt-compensated ToF height is low-pass filtered, then a **cascaded PID** (position → velocity
+→ thrust) with a battery-aware thrust clamp produces the altitude correction fed to Core 1:
+
+![VL53L1X altitude-hold algorithm](assets/vl53l1x/vl53l1x-algorithm.png)
+
+## Position Hold — PMW3901 (Optical Flow)
+
+Gyro-compensated optical flow is scaled by height into ground velocity and integrated into
+position, then a **cascaded PID** (position → velocity → tilt angle) nudges the roll/pitch
+setpoints to hold station:
+
+![PMW3901 position-hold algorithm](assets/pmw3901/pmw3901-algorithm.png)
+
+---
+
 ## Repository Layout
 
 ```
