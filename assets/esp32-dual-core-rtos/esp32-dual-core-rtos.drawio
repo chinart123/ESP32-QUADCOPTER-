@@ -47,8 +47,8 @@
         <mxCell id="ant" value="" style="shape=mxgraph.electrical.radio.aerial_-_antenna_1;html=1;strokeColor=#6c8ebf;fillColor=none;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
           <mxGeometry x="1035" y="378" width="30" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="antt" value="ESP-NOW → ground station" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#6c8ebf;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="925" y="430" width="250" height="20" as="geometry" />
+        <mxCell id="antt" value="ESP-NOW → ground station" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#6c8ebf;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="980" y="422" width="150" height="18" as="geometry" />
         </mxCell>
 
         <!-- SHARED STATE -->
@@ -62,7 +62,7 @@
         <mxCell id="e_chip0" style="html=1;endArrow=none;strokeColor=#cccccc;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="chip" target="core0"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e_nav_shared" value="corrections" style="html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.75;entryY=0;" edge="1" parent="1" source="navTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e_shared_loop" value="alt/pos correction" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#2E8B7F;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.35;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="shared" target="loopTask"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e_tele_shared" value="reads flight state" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#6c8ebf;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.95;entryY=0;" edge="1" parent="1" source="teleTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_tele_shared" value="reads flight state" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#6c8ebf;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;entryX=0.98;entryY=0;" edge="1" parent="1" source="teleTask" target="shared"><mxGeometry relative="1" as="geometry" /></mxCell>
 
       </root>
     </mxGraphModel>
