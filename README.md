@@ -21,7 +21,7 @@ The repository has three parts:
 
 ## Wiring / Hardware Diagram
 
-![Sender & receiver hardware wiring](assets/_style-demo/sender-receiver-hardware.png)
+![Sender & receiver hardware wiring](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/_style-demo/sender-receiver-hardware.png)
 
 ---
 
@@ -55,7 +55,7 @@ The repository has three parts:
 
 The ESP32-S3's two cores are split so flight never waits on the radio:
 
-![Dual-core RTOS model](assets/esp32-dual-core-rtos/esp32-dual-core-rtos.png)
+![Dual-core RTOS model](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/esp32-dual-core-rtos/esp32-dual-core-rtos.png)
 
 - **Core 1 — flight-critical (250 Hz / 4 ms fixed loop):** reads MPU6050, VL53L1X, PMW3901;
   runs the Kalman attitude estimate; runs the cascaded PID; mixes and drives the motors.
@@ -65,7 +65,7 @@ The ESP32-S3's two cores are split so flight never waits on the radio:
 - **Handshake:** the two cores exchange data only through the `shared_*` volatile variables.
 
 ### Sender → Receiver → Visualizer data flow
-![Sender to receiver data flow](assets/sender-receiver-flow.png)
+![Sender to receiver data flow](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/sender-receiver-flow.png)
 
 ---
 
@@ -73,15 +73,15 @@ The ESP32-S3's two cores are split so flight never waits on the radio:
 
 The full attitude pipeline — sensor read → Kalman estimate → cascaded PID → X-quad motor mix:
 
-![MPU6050 attitude pipeline](assets/mpu6050/mpu6050-algorithm.png)
+![MPU6050 attitude pipeline](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/mpu6050/mpu6050-algorithm.png)
 
 **Attitude estimation — Kalman filter** (per axis: angle + gyro-bias):
 
-![MPU6050 Kalman filter](assets/mpu6050/mpu6050-kalman-filter.png)
+![MPU6050 Kalman filter](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/mpu6050/mpu6050-kalman-filter.png)
 
 **Cascaded PID** — an outer angle (P) loop drives an inner rate (PID) loop:
 
-![Cascade control loop](assets/mpu6050/mpu6050-cascade-control.png)
+![Cascade control loop](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/mpu6050/mpu6050-cascade-control.png)
 
 | Gain | Value | Loop |
 |------|-------|------|
@@ -99,7 +99,7 @@ own PID corrections on top of attitude control.
 Tilt-compensated ToF height is low-pass filtered, then a **cascaded PID** (position → velocity
 → thrust) with a battery-aware thrust clamp produces the altitude correction fed to Core 1:
 
-![VL53L1X altitude-hold algorithm](assets/vl53l1x/vl53l1x-algorithm.png)
+![VL53L1X altitude-hold algorithm](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/vl53l1x/vl53l1x-algorithm.png)
 
 ## Position Hold — PMW3901 (Optical Flow)
 
@@ -107,7 +107,7 @@ Gyro-compensated optical flow is scaled by height into ground velocity and integ
 position, then a **cascaded PID** (position → velocity → tilt angle) nudges the roll/pitch
 setpoints to hold station:
 
-![PMW3901 position-hold algorithm](assets/pmw3901/pmw3901-algorithm.png)
+![PMW3901 position-hold algorithm](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/pmw3901/pmw3901-algorithm.png)
 
 ---
 
@@ -168,13 +168,13 @@ typedef struct {
 Connection-less 2.4 GHz unicast — the sender packs the struct and `esp_now_send`s it 10×/s;
 the receiver's `OnDataRecv` callback validates the length and `memcpy`s it back:
 
-![ESP-NOW telemetry link](assets/telemetry-esp-now/telemetry-esp-now.png)
+![ESP-NOW telemetry link](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/telemetry-esp-now/telemetry-esp-now.png)
 
 ### Ground-station visualizer (Processing)
 The receiver forwards each packet over USB Serial as a `"SIM,…"` CSV line; the Processing
 sketch parses it into a live 3D digital twin — attitude, altitude, position path, and graphs:
 
-![Processing digital twin](assets/telemetry-processing-app/telemetry-processing-app.png)
+![Processing digital twin](https://raw.githubusercontent.com/chinart123/ESP32-QUADCOPTER-/main/assets/telemetry-processing-app/telemetry-processing-app.png)
 
 ---
 
