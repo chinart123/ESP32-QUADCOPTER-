@@ -1,63 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="drawio" version="26.0.0">
   <diagram name="MPU6050-Algorithm">
-    <mxGraphModel dx="1000" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="ttl" value="MPU6050 — Attitude Estimation &amp; Cascaded PID" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" vertex="1" parent="1">
-          <mxGeometry x="100" y="20" width="760" height="30" as="geometry" />
+        <mxCell id="ttl" value="MPU6050 — Attitude Pipeline (Core 1, 250 Hz) : sensor → estimate → cascade PID → motors" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" vertex="1" parent="1">
+          <mxGeometry x="60" y="18" width="1020" height="30" as="geometry" />
         </mxCell>
 
-        <!-- 1. IMU read -->
-        <mxCell id="cardRead" value="① IMU — MPU6050 read" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="1">
-          <mxGeometry x="100" y="60" width="760" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="readIC" value="MPU6050" style="shadow=0;dashed=0;align=center;html=1;strokeWidth=1;shape=mxgraph.electrical.logic_gates.qfp_ic;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="cardRead">
-          <mxGeometry x="20" y="26" width="50" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="readTxt" value="readBurst() · 14-byte I²C @ 400 kHz&#xa;accel \((a_x,a_y,a_z)\) · gyro \((\omega_x,\omega_y,\omega_z)\)" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;spacingLeft=6;" vertex="1" parent="cardRead">
-          <mxGeometry x="100" y="30" width="640" height="55" as="geometry" />
+        <!-- ① IMU read -->
+        <mxCell id="s1" value="&lt;b&gt;①  IMU read — MPU6050&lt;/b&gt;&#xa;readBurst() · 14-byte I²C @ 400 kHz&#xa;accel \((a_x,a_y,a_z)\) + gyro \((\omega_x,\omega_y,\omega_z)\)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="64" width="640" height="80" as="geometry" />
         </mxCell>
 
-        <!-- 2. Attitude estimation -->
-        <mxCell id="cardAtt" value="② Attitude estimation  (dt = 4 ms)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="1">
-          <mxGeometry x="100" y="200" width="760" height="130" as="geometry" />
-        </mxCell>
-        <mxCell id="attTxt" value="\[\phi,\theta = \mathrm{Kalman}(\text{accel atan2},\ \omega)\]\[\psi \leftarrow \psi - \omega_z\,dt\]&#xa;gyro-Z · LPF 0.89 / 0.11   &#8594;   fRoll \(\phi\) · fPitch \(\theta\) · fYaw \(\psi\)" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;spacingLeft=10;" vertex="1" parent="cardAtt">
-          <mxGeometry x="15" y="26" width="730" height="98" as="geometry" />
+        <!-- ② Attitude -->
+        <mxCell id="s2" value="&lt;b&gt;②  Attitude estimation  (dt = 4 ms)&lt;/b&gt;&#xa;\(\phi,\theta = \mathrm{Kalman}(\mathrm{atan2}(a),\ \omega)\qquad \psi \mathrel{-}= \omega_z\,dt\)&#xa;gyro-Z low-pass 0.89 / 0.11  →  fRoll \(\phi\) · fPitch \(\theta\) · fYaw \(\psi\)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="176" width="640" height="92" as="geometry" />
         </mxCell>
 
-        <!-- 3. Outer loop -->
-        <mxCell id="cardOuter" value="③ Outer loop — angle P" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="1">
-          <mxGeometry x="100" y="370" width="760" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="outTxt" value="\[\omega^{*} = K_p^{\theta}\,(\theta_{sp} - \theta)\]&#xa;angle error &#8594; target body rate · setpoint \(\theta_{sp}\) from RC \(\pm 25^\circ\) (+ pos-hold \(\pm 12^\circ\))" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;spacingLeft=10;" vertex="1" parent="cardOuter">
-          <mxGeometry x="15" y="26" width="730" height="66" as="geometry" />
+        <!-- ③ Outer -->
+        <mxCell id="s3" value="&lt;b&gt;③  Outer loop — Angle P&lt;/b&gt;&#xa;\(\omega^{*} = K_p^{\theta}\,(\theta_{sp} - \theta),\quad K_p^{\theta}=7.3\)&#xa;setpoint \(\theta_{sp}\): RC ±25° (+ pos-hold ±12°)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8efe9;strokeColor=#2E8B7F;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="640" height="88" as="geometry" />
         </mxCell>
 
-        <!-- 4. Inner loop -->
-        <mxCell id="cardInner" value="④ Inner loop — rate PID  (roll · pitch · yaw)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=2;verticalAlign=top;align=center;" vertex="1" parent="1">
-          <mxGeometry x="100" y="510" width="760" height="165" as="geometry" />
-        </mxCell>
-        <mxCell id="inTxt" value="\[e = \omega^{*} - \omega_{gyro}\]\[u = K_p\,e + K_i\!\int e\,dt + K_d\,\dfrac{de}{dt}\]&#xa;I clamp \(\pm 200\) · reset if thr &lt; 50 · yaw D-term \(0.0028\dot e\)&#xa;&#8594; outRoll \(u_\phi\) · outPitch \(u_\theta\) · outYaw \(u_\psi\)" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;spacingLeft=10;" vertex="1" parent="cardInner">
-          <mxGeometry x="15" y="24" width="730" height="130" as="geometry" />
+        <!-- ④ Inner -->
+        <mxCell id="s4" value="&lt;b&gt;④  Inner loop — Rate PID  (roll · pitch · yaw)&lt;/b&gt;&#xa;\(e = \omega^{*} - \omega_{gyro}\qquad u = K_p e + K_i\!\int e\,dt + K_d\,\dot e\)&#xa;\(K_p{=}0.6\ \ K_i{=}0.04\ \ K_d{=}0.012\) · I clamp ±200 (reset if thr &lt; 50)&#xa;yaw: rate-only \(K_p{=}7.5,\ K_d\,0.0028\)  →  \(u_\phi, u_\theta, u_\psi\)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf0e3;strokeColor=#E8862E;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="640" height="120" as="geometry" />
         </mxCell>
 
-        <!-- 5. Motor mix -->
-        <mxCell id="cardMix" value="⑤ Motor mix — X-quad  (front ↑)" style="swimlane;startSize=22;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d79b00;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=1;verticalAlign=top;align=center;" vertex="1" parent="1">
-          <mxGeometry x="100" y="715" width="760" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="mixTxt" value="\(FL = b - u_\theta + u_\phi + u_\psi\)&#xa;\(FR = b - u_\theta - u_\phi - u_\psi\)&#xa;\(RL = b + u_\theta + u_\phi - u_\psi\)&#xa;\(RR = b + u_\theta - u_\phi + u_\psi\)&#xa;constrain 30..1023 &#8594; ledcWrite (if armed) · \(b\) = base throttle" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;spacingLeft=10;" vertex="1" parent="cardMix">
-          <mxGeometry x="15" y="28" width="730" height="115" as="geometry" />
+        <!-- ⑤ Motor mix -->
+        <mxCell id="s5" value="&lt;b&gt;⑤  Motor mix — X-quad&lt;/b&gt;&#xa;\(FL = b - u_\theta + u_\phi + u_\psi\)&#xa;\(FR = b - u_\theta - u_\phi - u_\psi\)&#xa;\(RL = b + u_\theta + u_\phi - u_\psi\)&#xa;\(RR = b + u_\theta - u_\phi + u_\psi\)&#xa;constrain 30–1023 → ledcWrite ×4 (if armed) · \(b\)=base throttle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9e2f3;strokeColor=#9673a6;fontSize=13;align=left;verticalAlign=middle;spacingLeft=16;" vertex="1" parent="1">
+          <mxGeometry x="80" y="572" width="640" height="150" as="geometry" />
         </mxCell>
 
-        <!-- flow edges -->
-        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardRead" target="cardAtt"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardAtt" target="cardOuter"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardOuter" target="cardInner"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cardInner" target="cardMix"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- flow arrows -->
+        <mxCell id="a1" style="html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a2" style="html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a3" style="html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a4" style="html=1;endArrow=classic;strokeColor=#666666;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ===== X-quad motor layout (right) ===== -->
+        <mxCell id="quadBox" value="X-quad layout — front ↑" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;dashPattern=6 6;fontSize=12;fontStyle=2;fontColor=#666666;verticalAlign=top;align=center;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="760" y="420" width="320" height="302" as="geometry" />
+        </mxCell>
+        <mxCell id="arm1" style="html=1;endArrow=none;strokeColor=#bbbbbb;strokeWidth=6;" edge="1" parent="1" source="mFL" target="mRR"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="arm2" style="html=1;endArrow=none;strokeColor=#bbbbbb;strokeWidth=6;" edge="1" parent="1" source="mFR" target="mRL"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="body" value="ESP32-S3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="872" y="540" width="96" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="mFL" value="FL&#xa;GPIO3&#xa;↻ CCW" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="470" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="mFR" value="FR&#xa;GPIO4&#xa;↺ CW" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="974" y="470" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="mRL" value="RL&#xa;GPIO2&#xa;↺ CW" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="596" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="mRR" value="RR&#xa;GPIO1&#xa;↻ CCW" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="974" y="596" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="frontArrow" value="front" style="text;html=1;align=center;fontSize=11;fontStyle=2;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="890" y="446" width="60" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="pipeIn" style="html=1;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;exitX=1;exitY=0.5;entryX=0.5;entryY=1;dashed=1;" edge="1" parent="1" source="s5" target="body"><mxGeometry relative="1" as="geometry" /></mxCell>
 
       </root>
     </mxGraphModel>

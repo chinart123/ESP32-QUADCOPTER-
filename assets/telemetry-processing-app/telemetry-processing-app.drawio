@@ -1,48 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="drawio" version="26.0.0">
   <diagram name="Telemetry-Processing-App">
-    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="0" shadow="0">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="Telemetry — Processing App (Digital Twin on the Ground PC)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" vertex="1" parent="1">
-          <mxGeometry x="40" y="20" width="1040" height="30" as="geometry" />
+        <mxCell id="ttl" value="Processing Digital Twin — serial CSV → 3D visualizer (drone_sim_clean.pde)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="60" y="18" width="1180" height="30" as="geometry" />
         </mxCell>
 
-        <mxCell id="src" value="Receiver — printProcessing()&#xa;Serial.printf(&quot;SIM,&quot; + 18 CSV fields) @ 921600" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="340" y="60" width="480" height="70" as="geometry" />
+        <!-- flow row -->
+        <mxCell id="s1" value="&lt;b&gt;① Serial in&lt;/b&gt;&#xa;Serial(COM8, 921600)&#xa;bufferUntil('\n')&#xa;→ serialEvent()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="230" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="usb" value="USB serial → PC  (COM8 @ 921600)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="340" y="170" width="480" height="50" as="geometry" />
+        <mxCell id="s2" value="&lt;b&gt;② Parse &quot;SIM,…&quot;&lt;/b&gt;&#xa;split CSV → 18 values&#xa;roll·pitch·yaw·alt · posX/Y&#xa;pwmX/Y · dX/dY · armed&#xa;rc4_min · targetH · vSpeed · Vx/Vy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="310" y="80" width="290" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="parse" value="serialEvent() — Processing&#xa;bufferUntil('\n') → line.startsWith(&quot;SIM,&quot;)&#xa;split CSV → tRoll, tPitch, tYaw, tAlt, tPosX/Y, tPwmX/Y,&#xa;tRawDX/Y, tArmed, tRc4Min, tDtFlow, tLoopUs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="340" y="260" width="480" height="110" as="geometry" />
+        <mxCell id="s3" value="&lt;b&gt;③ Smooth&lt;/b&gt;&#xa;lerp(display, target, 0.15)&#xa;→ dRoll, dPitch, dYaw,&#xa;&#160;&#160;&#160;dAlt, dX, dY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="80" width="240" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="kbd" value="keyPressed()&#xa;SPACE = reset origin&#xa;G = toggle graphs&#xa;R = clear result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="90" y="410" width="200" height="110" as="geometry" />
+        <mxCell id="s4" value="&lt;b&gt;④ Render P3D&lt;/b&gt;&#xa;draw() @ frameRate&#xa;lights() · 1200×800" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="920" y="80" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="draw" value="draw() @ ~60 fps&#xa;lerp smoothing: dRoll, dPitch, dYaw, dAlt, dX, dY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="340" y="420" width="480" height="70" as="geometry" />
+        <mxCell id="a1" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a2" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a3" style="html=1;endArrow=classic;strokeColor=#333333;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ===== screen mockup (dark) ===== -->
+        <mxCell id="screen" value="Processing P3D window (1200 × 800) — dark scene, background(20)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1f1f24;strokeColor=#111111;fontColor=#cccccc;fontSize=12;fontStyle=2;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="1100" height="400" as="geometry" />
         </mxCell>
-        <mxCell id="render" value="3D Digital Twin (P3D)&#xa;drone model · attitude rotateX/Y/Z&#xa;position + yellow path trail&#xa;ground grid · altitude ruler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="120" y="560" width="400" height="120" as="geometry" />
+        <mxCell id="a_render" value="renders" style="html=1;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="s4" target="screen"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- mini quad (center) -->
+        <mxCell id="qbody" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3a3a44;strokeColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="520" y="410" width="70" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="episode" value="updateEpisode() — settling metrics&#xa;path length · overshoot count&#xa;peak deviation · settle time&#xa;(START 1.5 / SETTLE 1.0 cm)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="640" y="560" width="400" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="hud" value="HUD overlays&#xa;main (roll/pitch/yaw/alt/deviation/comp) · episode result&#xa;disarm warning (rc4_min glitch) · timing (dt_flow, loop_us)&#xa;optional graphs (pos_x/y, deviation, rc4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="340" y="720" width="480" height="110" as="geometry" />
+        <mxCell id="qa1" style="html=1;endArrow=none;strokeColor=#666666;strokeWidth=5;" edge="1" parent="1" source="qFL" target="qRR"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="qa2" style="html=1;endArrow=none;strokeColor=#666666;strokeWidth=5;" edge="1" parent="1" source="qFR" target="qRL"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="qFL" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#4caf50;strokeColor=#ffffff;" vertex="1" parent="1"><mxGeometry x="470" y="372" width="34" height="34" as="geometry" /></mxCell>
+        <mxCell id="qFR" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#ffffff;" vertex="1" parent="1"><mxGeometry x="606" y="372" width="34" height="34" as="geometry" /></mxCell>
+        <mxCell id="qRL" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#ffffff;" vertex="1" parent="1"><mxGeometry x="470" y="460" width="34" height="34" as="geometry" /></mxCell>
+        <mxCell id="qRR" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#4caf50;strokeColor=#ffffff;" vertex="1" parent="1"><mxGeometry x="606" y="460" width="34" height="34" as="geometry" /></mxCell>
+        <mxCell id="qLbl" value="3D drone twin&#xa;roll · pitch · yaw" style="text;html=1;align=center;fontSize=11;fontColor=#dddddd;" vertex="1" parent="1"><mxGeometry x="480" y="500" width="150" height="34" as="geometry" /></mxCell>
+
+        <!-- altitude gauge (left) -->
+        <mxCell id="altG" value="altitude&#xa;(alt / targetHeight)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2a3340;strokeColor=#6c8ebf;fontColor=#dae8fc;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="300" width="150" height="260" as="geometry" />
         </mxCell>
 
-        <mxCell id="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="src" target="usb"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="usb" target="parse"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="parse" target="draw"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d4" value="input" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="kbd" target="draw"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.4;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="draw" target="render"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="draw" target="episode"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="render" target="hud"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="d8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="episode" target="hud"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- position path (right) -->
+        <mxCell id="pathP" value="position path&#xa;pos_x / pos_y trail&#xa;(settling: path-len,&#xa;peak-dev, overshoots)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2f2a3a;strokeColor=#9673a6;fontColor=#e1d5e7;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="900" y="300" width="200" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- graphs (bottom) -->
+        <mxCell id="graphs" value="live graphs — pos_x/y · deviation · rc4_min (300-sample ring)   ·   disarm log (rc4, alt)   ·   ARMED / DISARMED status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#333029;strokeColor=#d6b656;fontColor=#fff2cc;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="580" width="1010" height="50" as="geometry" />
+        </mxCell>
 
       </root>
     </mxGraphModel>

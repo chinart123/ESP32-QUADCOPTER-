@@ -1,0 +1,11 @@
+# Generated / heavy / machine-local — never commit these.
+# (Keeps editors' Source Control panels from drowning in venv/cache files.)
+
+# Python virtual environments (e.g. the RAG venv — ~48k files)
+.venv/
+# Python bytecode caches
+__pycache__/
+*.pyc
+# Secrets / local env
+.env
+*.local.env

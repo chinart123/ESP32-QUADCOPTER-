@@ -1,53 +1,58 @@
-<mxfile host="app.diagrams.net">
-  <diagram name="Telemetry-ESP-NOW" id="0">
-    <mxGraphModel dx="951" dy="534" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="Telemetry-ESP-NOW">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" value="Telemetry — ESP-NOW Link (Sender → Ground Station)" vertex="1">
-          <mxGeometry height="30" width="1140" x="40" y="20" as="geometry" />
+
+        <mxCell id="ttl" value="ESP-NOW Link — connection-less unicast telemetry (2.4 GHz, no Wi-Fi AP)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="60" y="18" width="1180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="sender" parent="1" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f0f4fb;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;" value="SENDER — ESP32-S3" vertex="1">
-          <mxGeometry height="560" width="520" x="40" y="70" as="geometry" />
+
+        <!-- SENDER peer -->
+        <mxCell id="sCard" value="SENDER — ESP-NOW peer (Core 0)" style="swimlane;startSize=26;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=8 6;strokeWidth=2;fontStyle=1;fontSize=13;fontColor=#6c8ebf;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="360" height="360" as="geometry" />
         </mxCell>
-        <mxCell id="ssetup" parent="sender" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="setupEspNow()  [Core 1]&#xa;WiFi STA · power-save OFF · TX power 8.5 dBm&#xa;esp_now_init() · add_peer(receiverAddress, ch 0, no encryption)" vertex="1">
-          <mxGeometry height="100" width="480" x="20" y="50" as="geometry" />
+        <mxCell id="sSetup" value="&lt;b&gt;setupEspNow()&lt;/b&gt;&#xa;WiFi.mode(WIFI_STA)&#xa;esp_wifi_set_ps(WIFI_PS_NONE)&#xa;esp_wifi_set_max_tx_power(34) → 8.5 dBm&#xa;esp_now_init() · add_peer(receiver)&#xa;channel 0 · encrypt = false" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="sCard">
+          <mxGeometry x="20" y="40" width="320" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="stask" parent="sender" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="TelemetryTask  [Core 0]  @ 10 Hz&#xa;copy live flight state → tele&#xa;esp_now_send(receiverAddress, &amp;tele, sizeof(tele))" vertex="1">
-          <mxGeometry height="100" width="480" x="20" y="180" as="geometry" />
+        <mxCell id="sSend" value="&lt;b&gt;TelemetryTask — 10 Hz&lt;/b&gt;&#xa;fill tele fields (fRoll, alt, pos…)&#xa;esp_now_send(receiverAddress,&#xa;&#160;&#160;(uint8_t*)&amp;tele, sizeof(tele))" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="sCard">
+          <mxGeometry x="20" y="185" width="320" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="packet" parent="sender" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=12;verticalAlign=top;spacingTop=8;" value="TelemetryPacket  (fixed wire format — sender &amp; receiver must match)&#xa;&#xa;float  roll, pitch, yaw&#xa;float  alt, targetHeight, verticalSpeed&#xa;float  pos_x, pos_y, V_real_x, V_real_y, pwm_x, pwm_y&#xa;int16  deltaX, deltaY&#xa;float  v_bat&#xa;uint8  armed" vertex="1">
-          <mxGeometry height="200" width="480" x="20" y="320" as="geometry" />
+        <mxCell id="sAnt" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="sCard">
+          <mxGeometry x="150" y="300" width="44" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="t1" edge="1" parent="sender" source="ssetup" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="stask" value="registers">
-          <mxGeometry relative="1" as="geometry" />
+
+        <!-- PACKET (center) -->
+        <mxCell id="pkt" value="&lt;b&gt;TelemetryPacket&lt;/b&gt;&#xa;(packed struct · 16 fields)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;align=center;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="470" y="150" width="340" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="t2" edge="1" parent="sender" source="stask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="packet" value="fills &amp; sends">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="pktBody" value="float roll, pitch, yaw&#xa;float alt, targetHeight, verticalSpeed&#xa;float pos_x, pos_y&#xa;float V_real_x, V_real_y&#xa;float pwm_x, pwm_y&#xa;int16 deltaX, deltaY&#xa;float v_bat&#xa;uint8 armed" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Courier New;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="480" y="196" width="320" height="185" as="geometry" />
         </mxCell>
-        <mxCell id="recv" parent="1" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f6f0fa;strokeColor=#9673a6;fontStyle=1;verticalAlign=top;" value="RECEIVER — ESP32 (ground station)" vertex="1">
-          <mxGeometry height="560" width="460" x="1140" y="70" as="geometry">
-            <mxRectangle height="30" width="250" x="720" y="70" as="alternateBounds" />
-          </mxGeometry>
+
+        <!-- RECEIVER peer -->
+        <mxCell id="rCard" value="RECEIVER — ESP-NOW peer" style="swimlane;startSize=26;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#9673a6;dashed=1;dashPattern=8 6;strokeWidth=2;fontStyle=1;fontSize=13;fontColor=#9673a6;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="880" y="90" width="360" height="360" as="geometry" />
         </mxCell>
-        <mxCell id="rsetup" parent="recv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="setupEspNowReceiver()&#xa;WiFi STA · esp_now_init()&#xa;esp_now_register_recv_cb(OnDataRecv)" vertex="1">
-          <mxGeometry height="100" width="400" x="30" y="50" as="geometry" />
+        <mxCell id="rAnt" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.radio.aerial_-_antenna_1;strokeColor=#9673a6;strokeWidth=2;direction=north;" vertex="1" parent="rCard">
+          <mxGeometry x="160" y="34" width="44" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="rondata" parent="recv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="OnDataRecv(mac, data, len)  — callback&#xa;if len == sizeof(tele):  memcpy → tele&#xa;→ printProcessing()  +  printTeleplot()" vertex="1">
-          <mxGeometry height="100" width="400" x="30" y="180" as="geometry" />
+        <mxCell id="rSetup" value="&lt;b&gt;setupEspNowReceiver()&lt;/b&gt;&#xa;WiFi.mode(WIFI_STA)&#xa;esp_now_init()&#xa;esp_now_register_recv_cb(OnDataRecv)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="rCard">
+          <mxGeometry x="20" y="100" width="320" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="rserial" parent="recv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="Serial @ 921600  →  ground PC&#xa;(feeds the Processing app)" vertex="1">
-          <mxGeometry height="70" width="400" x="30" y="320" as="geometry" />
+        <mxCell id="rRecv" value="&lt;b&gt;OnDataRecv(mac, data, len)&lt;/b&gt;&#xa;if (len == sizeof(tele))&#xa;&#160;&#160;memcpy(&amp;tele, data, sizeof(tele))&#xa;→ printProcessing()  (Serial CSV)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="rCard">
+          <mxGeometry x="20" y="210" width="320" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="t3" edge="1" parent="recv" source="rsetup" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="rondata" value="registers callback">
-          <mxGeometry relative="1" as="geometry" />
+
+        <!-- edges -->
+        <mxCell id="e_pack" value="serialize" style="html=1;endArrow=classic;strokeColor=#d6b656;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.4;entryX=0;entryY=0.5;" edge="1" parent="1" source="sSend" target="pkt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_unpack" value="memcpy" style="html=1;endArrow=classic;strokeColor=#d6b656;strokeWidth=2;fontSize=11;fontStyle=2;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0.05;entryY=0.75;" edge="1" parent="1" source="pkt" target="rRecv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_link" value="unicast → receiver MAC · 2.4 GHz · no ACK/AP" style="html=1;endArrow=classic;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sAnt" target="rAnt">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="212" y="470" /><mxPoint x="1042" y="470" /></Array></mxGeometry>
         </mxCell>
-        <mxCell id="t4" edge="1" parent="recv" source="rondata" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="rserial">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="wireless" edge="1" parent="1" source="stask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;flowAnimation=1;strokeColor=#9673a6;strokeWidth=2;fontSize=12;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rondata" value="ESP-NOW · 2.4 GHz · channel 0 · unencrypted · sizeof(tele) bytes">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+
       </root>
     </mxGraphModel>
   </diagram>

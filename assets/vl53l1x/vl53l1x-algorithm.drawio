@@ -1,61 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="drawio" version="26.0.0">
-  <diagram name="VL53L1X-Algorithm">
-    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="0" shadow="0">
+  <diagram name="VL53L1X-Altitude-Hold">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="VL53L1X — ToF Height Sensing &amp; Cascaded Altitude-Hold PID" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" vertex="1" parent="1">
-          <mxGeometry x="40" y="20" width="1080" height="30" as="geometry" />
+        <mxCell id="ttl" value="VL53L1X — Altitude Hold · Cascade PID (position → velocity → thrust)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="120" y="20" width="1200" height="30" as="geometry" />
         </mxCell>
 
-        <!-- sensing pipeline (green) -->
-        <mxCell id="setup" value="setupToF()&#xa;Short distance mode · timing budget 20 ms · startContinuous(20)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="300" y="60" width="500" height="60" as="geometry" />
+        <!-- nested dashed loop boxes -->
+        <mxCell id="outerBox" value="OUTER LOOP — P (Position):  drives height to target, sets the climb-rate set-point" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B7F;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#2E8B7F;" vertex="1" parent="1">
+          <mxGeometry x="165" y="95" width="1170" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="read" value="read() when dataReady&#xa;raw ToF, constrain 25..2250 mm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="300" y="160" width="500" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="tilt" value="Tilt compensation → true vertical height&#xa;h = raw · cos(fRoll) · cos(fPitch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="300" y="260" width="500" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fheight" value="filteredHeight = 0.3·prev + 0.7·h  (LPF)&#xa;verticalSpeed = Δheight / Δt  (LPF 0.4 / 0.6)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="300" y="360" width="500" height="60" as="geometry" />
+        <mxCell id="innerBox" value="INNER LOOP — PID (Velocity):  tracks the target climb rate, output is the thrust correction" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#E8862E;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#E8862E;" vertex="1" parent="1">
+          <mxGeometry x="558" y="122" width="770" height="368" as="geometry" />
         </mxCell>
 
-        <!-- gate -->
-        <mxCell id="gate" value="altitudeHold&#xa;&amp;&amp; altMode == HOLD ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="440" y="460" width="220" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="off" value="No hold&#xa;correction = 0&#xa;(manual throttle)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="850" y="475" width="230" height="60" as="geometry" />
+        <!-- setpoint -->
+        <mxCell id="sp" value="\(h_{target}\)&#xa;(RC throttle)" style="text;html=1;align=right;verticalAlign=middle;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="130" height="48" as="geometry" />
         </mxCell>
 
-        <!-- PID (yellow band) -->
-        <mxCell id="outer" value="OUTER loop — position → target velocity&#xa;altError = targetHeight − filteredHeight  (deadband 2 mm)&#xa;targetVelocity = P · altError  (climb speed capped by battery)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="300" y="590" width="500" height="80" as="geometry" />
+        <!-- Sigma 1 -->
+        <mxCell id="sum1" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="183" width="42" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="inner" value="INNER loop — velocity → thrust&#xa;velocityError = targetVelocity − verticalSpeed&#xa;iTermAlt += I · velErr  (battery clamp, emergency boost near target)&#xa;altitudeCorrection = P·soften·velErr + iTermAlt − D·verticalSpeed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="300" y="710" width="500" height="100" as="geometry" />
+        <mxCell id="sum1p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1"><mxGeometry x="176" y="178" width="16" height="16" as="geometry" /></mxCell>
+        <mxCell id="sum1m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1"><mxGeometry x="214" y="226" width="16" height="16" as="geometry" /></mxCell>
+
+        <!-- OUTER P block -->
+        <mxCell id="pOuter" value="&lt;b&gt;P — Position&lt;/b&gt;&#xa;\(v^{*} = K_p\,e_h\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="285" y="172" width="195" height="64" as="geometry" />
         </mxCell>
-        <mxCell id="clamp" value="Battery-aware clamp (asymmetric)&#xa;descend: constrain ±40  ·  climb: −120 .. maxThrust(v_bat)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="300" y="850" width="500" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="out" value="shared_altitudeCorrection → shared_smoothCorrection (LPF 0.3/0.7)&#xa;→ Core 1 throttle (altitude hold)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="300" y="950" width="500" height="60" as="geometry" />
+        <mxCell id="pOuterK" value="\[K_p = 0.45\quad(\text{deadband }2\,\mathrm{mm})\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="255" y="240" width="255" height="26" as="geometry" />
         </mxCell>
 
-        <!-- edges -->
-        <mxCell id="v1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="setup" target="read"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="read" target="tilt"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tilt" target="fheight"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fheight" target="gate"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v5" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gate" target="off"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v6" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="gate" target="outer"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="outer" target="inner"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="inner" target="clamp"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="v9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="clamp" target="out"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- Sigma 2 -->
+        <mxCell id="sum2" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="183" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="sum2p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1"><mxGeometry x="570" y="178" width="16" height="16" as="geometry" /></mxCell>
+        <mxCell id="sum2m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1"><mxGeometry x="608" y="226" width="16" height="16" as="geometry" /></mxCell>
+
+        <!-- INNER PID block -->
+        <mxCell id="pidInner" value="&lt;b&gt;PID — Velocity&lt;/b&gt;&#xa;\(u = 1.5K_p\,e_v + K_i\!\int e_v\,dt - K_d\,\dot h\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="167" width="255" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pidInnerK" value="\[K_p{=}0.45 \quad K_i{=}0.35 \quad K_d{=}0.95\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="680" y="245" width="255" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- Plant -->
+        <mxCell id="plant" value="&lt;b&gt;Motor Thrust + Airframe&lt;/b&gt;&#xa;throttle → climb&#xa;(battery-aware clamp)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6f4;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="168" width="235" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- feedback: sensor + filter -->
+        <mxCell id="sensor" value="&lt;b&gt;VL53L1X (ToF)&lt;/b&gt;&#xa;short mode · 20 ms · 25–2250 mm" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="690" y="380" width="245" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="fltr" value="&lt;b&gt;Tilt-comp + LPF&lt;/b&gt;&#xa;\(h = d\cos\phi\cos\theta\) → filteredHeight" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="285" y="380" width="215" height="78" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note" value="off → correction = 0 (manual throttle) · out: shared_altitudeCorrection → shared_smoothCorrection (LPF) → Core 1 throttle · dt = 4 ms @ 250 Hz" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="490" width="1120" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- forward edges -->
+        <mxCell id="e_sp" style="html=1;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sp" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e1" value="\(e_h\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum1" target="pOuter"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="\(v^{*}\) (target climb rate)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pOuter" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="\(e_v\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum2" target="pidInner"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="altitudeCorrection" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pidInner" target="plant"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- feedback edges -->
+        <mxCell id="fb_plant" value="actual height (physical)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="plant" target="sensor"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_vspeed" value="\(\dot h\) = Δh/Δt (LPF)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.72;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sensor" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_raw" value="raw ToF" style="html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sensor" target="fltr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_h" value="filteredHeight" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fltr" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
 
       </root>
     </mxGraphModel>

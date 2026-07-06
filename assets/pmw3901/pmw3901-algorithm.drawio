@@ -1,69 +1,88 @@
-<mxfile host="app.diagrams.net">
-  <diagram name="PMW3901-Algorithm" id="0">
-    <mxGraphModel dx="1823" dy="1023" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="PMW3901-Position-Hold">
+    <mxGraphModel dx="1400" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" math="1" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;" value="PMW3901 — Optical-Flow Odometry &amp; Cascaded Position-Hold PID" vertex="1">
-          <mxGeometry height="30" width="1080" x="40" y="20" as="geometry" />
+
+        <mxCell id="ttl" value="PMW3901 — Position Hold · Cascade PI–PD (position → velocity → tilt)" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="120" y="20" width="1200" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="setup" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="setupPMW() — SPI init (CS / SCK / MOSI / MISO)" vertex="1">
-          <mxGeometry height="50" width="500" x="300" y="60" as="geometry" />
+
+        <!-- nested dashed loop boxes -->
+        <mxCell id="outerBox" value="OUTER LOOP — PI (Position):  drives position back to the hold point, sets the target velocity" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B7F;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#2E8B7F;" vertex="1" parent="1">
+          <mxGeometry x="165" y="95" width="1170" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="read" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="readMotionCount() every 10 ms&#xa;raw_dx, raw_dy  →  deltaX, deltaY (−raw_dy)" vertex="1">
-          <mxGeometry height="60" width="500" x="300" y="150" as="geometry" />
+        <mxCell id="innerBox" value="INNER LOOP — PD (Velocity):  tracks the target velocity, output is the tilt-angle command" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#E8862E;dashed=1;dashPattern=8 6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=16;spacingTop=8;fontSize=12;fontStyle=2;fontColor=#E8862E;" vertex="1" parent="1">
+          <mxGeometry x="558" y="122" width="770" height="368" as="geometry" />
         </mxCell>
-        <mxCell id="comp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Gyro / attitude compensation (remove tilt-induced flow)&#xa;real_angle = flow · PIXEL_TO_RAD + Δattitude · 0.83 (GYRO_COMP)" vertex="1">
-          <mxGeometry height="70" width="500" x="300" y="250" as="geometry" />
+
+        <!-- setpoint -->
+        <mxCell id="sp" value="\(pos_{target}=0\)&#xa;(hold / stick)" style="text;html=1;align=right;verticalAlign=middle;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="30" y="180" width="140" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="scale" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Scale by height → ground velocity&#xa;dx_cm = real_angle · height_cm  (height_cm from filteredHeight)&#xa;V_real = dx_cm / Δt  (heavy LPF)" vertex="1">
-          <mxGeometry height="80" width="500" x="300" y="360" as="geometry" />
+
+        <!-- Sigma 1 -->
+        <mxCell id="sum1" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="183" width="42" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="integ" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Integrate position:  pos_x += dx_cm,  pos_y += dy_cm  (constrain ±200 cm)" vertex="1">
-          <mxGeometry height="50" width="500" x="300" y="480" as="geometry" />
+        <mxCell id="sum1p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1"><mxGeometry x="176" y="178" width="16" height="16" as="geometry" /></mxCell>
+        <mxCell id="sum1m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1"><mxGeometry x="214" y="226" width="16" height="16" as="geometry" /></mxCell>
+
+        <!-- OUTER PI block -->
+        <mxCell id="pOuter" value="&lt;b&gt;PI — Position&lt;/b&gt;&#xa;\(V^{*} = K_p\,e + K_i\!\int e\,dt\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="285" y="172" width="195" height="64" as="geometry" />
         </mxCell>
-        <mxCell id="gate" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Pos-Hold enabled?&#xa;rc5 high · no stick override&#xa;· not bouncing · h &gt; 80 mm" vertex="1">
-          <mxGeometry height="110" width="260" x="420" y="570" as="geometry" />
+        <mxCell id="pOuterK" value="\[K_p{=}0.6\,\alpha_h \quad K_i{=}0.008 \quad(V^{*}\!\le\!\pm10)\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="245" y="240" width="275" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="off" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Disabled&#xa;pos_x/y = 0&#xa;shared_pwm_opt = 0&#xa;pos_hold_active = false" vertex="1">
-          <mxGeometry height="70" width="230" x="850" y="590" as="geometry" />
+
+        <!-- Sigma 2 -->
+        <mxCell id="sum2" value="Σ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="183" width="42" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="outer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="OUTER loop — position → target velocity&#xa;error = 0 − pos  (dead-zone 0.4 cm)&#xa;iTerm (clamp ±10) → target_V = Kp·error + Ki·iTerm  (±10, ×alt_factor)" vertex="1">
-          <mxGeometry height="90" width="500" x="300" y="710" as="geometry" />
+        <mxCell id="sum2p" value="+" style="text;html=1;align=center;fontSize=14;fontStyle=1;fontColor=#2E8B7F;" vertex="1" parent="1"><mxGeometry x="570" y="178" width="16" height="16" as="geometry" /></mxCell>
+        <mxCell id="sum2m" value="−" style="text;html=1;align=center;fontSize=15;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1"><mxGeometry x="608" y="226" width="16" height="16" as="geometry" /></mxCell>
+
+        <!-- INNER PD block -->
+        <mxCell id="pidInner" value="&lt;b&gt;PD — Velocity&lt;/b&gt;&#xa;\(\alpha = K_p\,e_v + K_d\,\dot d\)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="167" width="255" height="74" as="geometry" />
         </mxCell>
-        <mxCell id="inner" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="INNER loop — velocity → tilt angle (PD)&#xa;error_vel = target_V − V_real&#xa;raw_angle = Kp_vel·error_vel + Kd_vel·filtered_d  (D low-pass filtered)" vertex="1">
-          <mxGeometry height="90" width="500" x="300" y="840" as="geometry" />
+        <mxCell id="pidInnerK" value="\[K_p{=}0.25\,\alpha_h \quad K_d{=}0.37\,\alpha_h\;(\text{D LPF})\]" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="655" y="245" width="305" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="out" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="shared_pwm_opt_x / _y = constrain(±15°) · shared_pos_hold_active = true&#xa;→ Core 1 adds correction to targetR / targetP" vertex="1">
-          <mxGeometry height="60" width="500" x="300" y="970" as="geometry" />
+
+        <!-- Plant -->
+        <mxCell id="plant" value="&lt;b&gt;Tilt → Airframe&lt;/b&gt;&#xa;roll/pitch setpoint → motion&#xa;(tilt ≤ ±15°)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6f4;strokeColor=#333333;fontSize=13;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="168" width="235" height="72" as="geometry" />
         </mxCell>
-        <mxCell id="p1" edge="1" parent="1" source="setup" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="read">
-          <mxGeometry relative="1" as="geometry" />
+
+        <!-- feedback: sensor + filter -->
+        <mxCell id="sensor" value="&lt;b&gt;PMW3901 (optical flow)&lt;/b&gt;&#xa;readMotionCount @ 10 ms · deltaX, deltaY" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="380" width="255" height="78" as="geometry" />
         </mxCell>
-        <mxCell id="p2" edge="1" parent="1" source="read" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="comp">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="fltr" value="&lt;b&gt;Gyro-comp + scale by h&lt;/b&gt;&#xa;\(V_{real}\), integrate → pos (±200 cm)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=12;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="275" y="380" width="235" height="78" as="geometry" />
         </mxCell>
-        <mxCell id="p3" edge="1" parent="1" source="comp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="scale">
-          <mxGeometry relative="1" as="geometry" />
+
+        <mxCell id="note" value="gate: rc5 high · no stick override · not bouncing · h &gt; 80 mm  (else pos=0, hold off) · out: shared_pwm_opt_x/y → Core 1 adds to targetR / targetP · dt = 4 ms @ 250 Hz" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="180" y="490" width="1150" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="p4" edge="1" parent="1" source="scale" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="integ">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="p5" edge="1" parent="1" source="integ" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="gate">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="p6" edge="1" parent="1" source="gate" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="off" value="no">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="p7" edge="1" parent="1" source="gate" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="outer" value="yes">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="p8" edge="1" parent="1" source="outer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="inner">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="p9" edge="1" parent="1" source="inner" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="out">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+
+        <!-- forward edges -->
+        <mxCell id="e_sp" style="html=1;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sp" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e1" value="\(e\) (pos error)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum1" target="pOuter"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="\(V^{*}\) (target velocity)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pOuter" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="\(e_v\)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sum2" target="pidInner"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="\(\alpha\) tilt (shared_pwm_opt)" style="html=1;fontSize=13;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pidInner" target="plant"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- feedback edges -->
+        <mxCell id="fb_plant" value="actual motion (physical)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="plant" target="sensor"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_v" value="\(V_{real}\) (heavy LPF)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0.72;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sensor" target="sum2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_flow" value="Δx, Δy · PIXEL_TO_RAD" style="html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sensor" target="fltr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fb_pos" value="pos (integrated)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontStyle=2;labelBackgroundColor=#ffffff;endArrow=classic;strokeColor=#333333;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fltr" target="sum1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
       </root>
     </mxGraphModel>
   </diagram>
